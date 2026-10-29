@@ -1,0 +1,161 @@
+{
+  "info": {
+    "name": "Cars API",
+    "description": "Tests the local cars catalog. Available cars have status \"1\". Logical delete sets status to \"0\". The delete request uses the i30, which is already deleted, so importing and running the collection does not remove the Elantra or Tucson.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8085"
+    },
+    {
+      "key": "availableCarId",
+      "value": "672bae02077bfeb5056b92a3",
+      "description": "Elantra, status 1"
+    },
+    {
+      "key": "deletedCarId",
+      "value": "672baead077bfeb5056b92a5",
+      "description": "i30, already status 0"
+    },
+    {
+      "key": "missingCarId",
+      "value": "000000000000000000000000"
+    }
+  ],
+  "item": [
+    {
+      "name": "List available cars",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/car"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const cars = pm.response.json();",
+              "",
+              "pm.test('returns 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('returns only cars with status 1', function () {",
+              "    pm.expect(cars).to.be.an('array').that.is.not.empty;",
+              "    cars.forEach(function (car) {",
+              "        pm.expect(car.status).to.eql('1');",
+              "    });",
+              "    const models = cars.map(function (car) { return car.model; });",
+              "    pm.expect(models).to.include('Elantra');",
+              "    pm.expect(models).to.include('Tucson');",
+              "    pm.expect(models).to.not.include('i30');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get car by id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/car/{{availableCarId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const car = pm.response.json();",
+              "",
+              "pm.test('returns 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('returns the available car', function () {",
+              "    pm.expect(car.id).to.eql(pm.collectionVariables.get('availableCarId'));",
+              "    pm.expect(car.brand).to.eql('Hyundai');",
+              "    pm.expect(car.model).to.eql('Elantra');",
+              "    pm.expect(car.price).to.eql('190000');",
+              "    pm.expect(car.status).to.eql('1');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get logically deleted car",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/car/{{deletedCarId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('logically deleted car returns 404', function () {",
+              "    pm.response.to.have.status(404);",
+              "    pm.expect(pm.response.text()).to.eql('');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get missing car",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/car/{{missingCarId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('unknown SKU returns 404', function () {",
+              "    pm.response.to.have.status(404);",
+              "    pm.expect(pm.response.text()).to.eql('');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Logically delete a car",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": "{{baseUrl}}/api/car/{{deletedCarId}}",
+        "description": "Sets status to 0. The default id is the i30, which is already deleted."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('logical delete returns 204', function () {",
+              "    pm.response.to.have.status(204);",
+              "    pm.expect(pm.response.text()).to.eql('');",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
