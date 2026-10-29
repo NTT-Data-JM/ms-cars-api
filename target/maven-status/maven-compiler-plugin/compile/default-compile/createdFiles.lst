@@ -1,0 +1,7 @@
+com\demo\example\cars\repository\CarRepository.class
+com\demo\example\cars\controller\CarController.class
+com\demo\example\cars\model\Car$CarBuilder.class
+com\demo\example\cars\service\CarService.class
+com\demo\example\cars\service\impl\CarServiceImpl.class
+com\demo\example\cars\MsCarsDummyApplication.class
+com\demo\example\cars\model\Car.class
