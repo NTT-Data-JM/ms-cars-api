@@ -1,25 +1,23 @@
 package com.demo.example.cars.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.Optional;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Document(collection = "cars")
-public class Car {
+public record Car(
+    @Id String id,
+    String brand,
+    String model,
+    String price,
+    String status
+) {
 
-    @Id
-    private String id;
-    private String brand;
-    private String model;
-    private String price;
-    private String status;
+  public Optional<Car> available() {
+    return "1".equals(status) ? Optional.of(this) : Optional.empty();
+  }
+
+  public Car logicallyDeleted() {
+    return new Car(id, brand, model, price, "0");
+  }
 }

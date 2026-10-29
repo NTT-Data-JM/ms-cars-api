@@ -11,11 +11,11 @@ public record CarResponse(
 ) {
     public static CarResponse from(Car car) {
         return new CarResponse(
-                car.getId(),
-                car.getBrand(),
-                car.getModel(),
-                car.getPrice(),
-                car.getStatus()
+                car.id(),
+                car.brand(),
+                car.model(),
+                car.price(),
+                car.status()
         );
     }
 }
